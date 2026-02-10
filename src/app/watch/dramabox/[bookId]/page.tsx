@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { DramaDetailDirect, DramaDetailResponseLegacy } from "@/types/drama";
+import { VideoAd } from "@/components/VideoAd";
 
 // Helper to check if response is new format
 function isDirectFormat(data: unknown): data is DramaDetailDirect {
@@ -31,6 +32,7 @@ export default function DramaBoxWatchPage() {
   const [currentEpisode, setCurrentEpisode] = useState(0);
   const [quality, setQuality] = useState(720);
   const [showEpisodeList, setShowEpisodeList] = useState(false);
+  const [showAd, setShowAd] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const { data: detailData, isLoading: detailLoading } = useDramaDetail(bookId || "");
@@ -44,9 +46,28 @@ export default function DramaBoxWatchPage() {
     }
   }, [searchParams]);
 
+  // Track which episodes have shown ads to prevent showing more than 2 ads per 10 episodes
+  const adShownEpisodes = useRef<number[]>([]);
+  
   // Update URL when episode changes (for manual navigation)
   const handleEpisodeChange = (index: number, preserveFullscreen = false) => {
     setCurrentEpisode(index);
+    
+    // Check if we should show an ad (every 10 episodes, max 2 per 10 episodes)
+    const blockOfTenStart = Math.floor(index / 10) * 10;
+    const blockOfTenEnd = blockOfTenStart + 10;
+    
+    // Count how many ads have been shown in this block of 10
+    const adsInBlock = adShownEpisodes.current.filter(ep => 
+      ep >= blockOfTenStart && ep < blockOfTenEnd
+    ).length;
+    
+    // Show ad if it's a multiple of 10 episode and we haven't shown 2 ads yet in this block
+    if ((index + 1) % 10 === 0 && index > 0 && adsInBlock < 2) {
+      setShowAd(true);
+      adShownEpisodes.current.push(index);
+    }
+    
     setShowEpisodeList(false);
     if (preserveFullscreen) {
       window.history.replaceState(null, '', `/watch/dramabox/${bookId}?ep=${index}`);
@@ -106,6 +127,18 @@ export default function DramaBoxWatchPage() {
     }
   };
 
+  const handleAdComplete = () => {
+    setShowAd(false);
+  };
+
+  const handleAdSkip = () => {
+    setShowAd(false);
+  };
+
+  const closeAd = () => {
+    setShowAd(false);
+  };
+
   // Handle both new and legacy API formats
   let book: { bookId: string; bookName: string } | null = null;
 
@@ -145,6 +178,17 @@ export default function DramaBoxWatchPage() {
 
   return (
     <main className="fixed inset-0 bg-black flex flex-col">
+      {/* Video Ad Component */}
+      <VideoAd 
+        bookId={bookId} 
+        currentEpisode={currentEpisode + 1} 
+        totalEpisodes={totalEpisodes} 
+        showAd={showAd}
+        onAdComplete={handleAdComplete}
+        onAdSkip={handleAdSkip}
+        onClose={closeAd}
+      />
+      
       {/* Header - Fixed Overlay with improved visibility */}
       <div className="absolute top-0 left-0 right-0 z-40 h-16 pointer-events-none">
         {/* Gradient background for readability */}
@@ -157,9 +201,9 @@ export default function DramaBoxWatchPage() {
             className="flex items-center gap-2 text-white/90 hover:text-white transition-colors p-2 -ml-2 rounded-full hover:bg-white/10"
           >
             <ChevronLeft className="w-6 h-6" />
-            <span className="text-primary font-bold hidden sm:inline shadow-black drop-shadow-md">SekaiDrama</span>
+            <span className="text-primary font-bold hidden sm:inline shadow-black drop-shadow-md">DracinAja</span>
           </Link>
-          
+
           <div className="text-center flex-1 px-4 min-w-0">
             <h1 className="text-white font-medium truncate text-sm sm:text-base drop-shadow-md">
               {book.bookName}
@@ -233,7 +277,7 @@ export default function DramaBoxWatchPage() {
                 >
                   <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
-                
+
                 <span className="text-white font-medium text-xs md:text-sm tabular-nums min-w-[60px] md:min-w-[80px] text-center">
                   Ep {currentEpisode + 1} / {totalEpisodes}
                 </span>
@@ -252,7 +296,7 @@ export default function DramaBoxWatchPage() {
       {/* Episode List Sidebar */}
       {showEpisodeList && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
             onClick={() => setShowEpisodeList(false)}
           />
@@ -278,8 +322,8 @@ export default function DramaBoxWatchPage() {
                   onClick={() => handleEpisodeChange(idx)}
                   className={`
                     aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all
-                    ${idx === currentEpisode 
-                      ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                    ${idx === currentEpisode
+                      ? "bg-primary text-white shadow-lg shadow-primary/20"
                       : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
                     }
                   `}

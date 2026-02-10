@@ -10,6 +10,7 @@ import { FreeReelsHome } from "@/components/FreeReelsHome";
 import { useLatestDramas, useTrendingDramas, useDubindoDramas } from "@/hooks/useDramas";
 import { usePlatform } from "@/hooks/usePlatform";
 import { InfiniteDramaSection } from "@/components/InfiniteDramaSection";
+import { GoogleAd } from "@/components/GoogleAd";
 
 export default function HomeContent() {
   const { isDramaBox, isReelShort, isNetShort, isMelolo, isFlickReels, isFreeReels } = usePlatform();
@@ -93,6 +94,18 @@ export default function HomeContent() {
           <FreeReelsHome />
         </div>
       )}
+      
+      {/* Google Ad - Only show if user has consented to cookies */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex justify-center">
+          <GoogleAd 
+            slot="7772944871292494" // Ganti dengan slot ID yang valid dari akun AdSense Anda
+            format="auto"
+            responsive="true"
+            className="w-full max-w-2xl"
+          />
+        </div>
+      </div>
     </main>
   );
 }

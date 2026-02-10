@@ -3,8 +3,16 @@
 import { QueryClient, QueryClientProvider, QueryCache } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { ConsentBanner } from './ConsentBanner';
+
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+    gtag: any;
+  }
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -32,6 +40,31 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   );
 
+  useEffect(() => {
+    const loadAds = () => {
+      const consent = localStorage.getItem('cookie_consent');
+      if (consent === 'accepted') {
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (err) {
+          console.error('Google AdSense error:', err);
+        }
+      }
+    };
+
+    // Load ads when consent is given
+    const handleConsentChange = () => {
+      loadAds();
+    };
+
+    // Listen for consent changes
+    window.addEventListener('storage', handleConsentChange);
+
+    return () => {
+      window.removeEventListener('storage', handleConsentChange);
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
@@ -40,7 +73,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          {children}
+          <ConsentBanner />
+        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

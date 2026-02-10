@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import type { DramaDetailDirect, DramaDetailResponseLegacy } from "@/types/drama";
+import { GoogleAd } from "@/components/GoogleAd";
 
 // Helper to check if response is new format
 function isDirectFormat(data: unknown): data is DramaDetailDirect {
@@ -170,6 +171,20 @@ export default function DramaBoxDetailPage() {
                 Mulai Menonton
               </Link>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Google Ad - Only show if user has consented to cookies */}
+      <div className="py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center">
+            <GoogleAd 
+              slot="7772944871292494" // Ganti dengan slot ID yang valid dari akun AdSense Anda
+              format="auto"
+              responsive="true"
+              className="w-full max-w-2xl"
+            />
           </div>
         </div>
       </div>

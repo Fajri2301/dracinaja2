@@ -33,9 +33,9 @@ export function Footer() {
 
           <p className="text-sm text-muted-foreground text-center">
             API yang digunakan:{" "}
-            <a 
-                  href="https://api.sansekai.my.id" 
-                  target="_blank" 
+            <a
+                  href="https://api.sansekai.my.id"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 text-primary hover:underline font-semibold"
                 >
@@ -43,6 +43,16 @@ export function Footer() {
                   <ExternalLink className="w-3 h-3" />
                 </a>
           </p>
+
+          {/* Policy Links */}
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+            <Link href="/privacy-policy" className="hover:text-primary transition-colors">
+              Kebijakan Privasi
+            </Link>
+            <Link href="/cookie-policy" className="hover:text-primary transition-colors">
+              Kebijakan Cookie
+            </Link>
+          </div>
 
           {/* Copyright */}
           <p className="text-xs text-muted-foreground/80 text-center font-medium">

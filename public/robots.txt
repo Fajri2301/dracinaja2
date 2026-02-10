@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /api/
+Disallow: /admin/
+
+# Allow all other pages
+Allow: /
+
+# Sitemap
+Sitemap: https://dracinaja.com/sitemap.xml
