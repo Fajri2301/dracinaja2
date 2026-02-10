@@ -3,7 +3,11 @@
 [![License](https://img.shields.io/github/license/Sansekai/DracinAja)](https://github.com/Sansekai/DracinAja/blob/main/LICENSE)
 [![Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Sansekai/DracinAja)
 
-![Preview](public/preview.png)
+## gambar halaman mobile
+![Preview](public/prev1.png)
+
+## gambar halaman mdesktop
+![Preview](public/prev2.png)
 
 DracinAja adalah platform streaming drama pendek (vertical drama) modern yang menampilkan konten dari bebebrapa platform populer. Dibangun dengan teknologi web terkini untuk performa maksimal dan pengalaman pengguna yang premium.
 
